@@ -7,13 +7,19 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import cl.sisitemaventas.app.entity.Producto;
 import cl.sisitemaventas.app.entity.ProductoParaVender;
+import cl.sisitemaventas.app.entity.ProductoVendido;
+import cl.sisitemaventas.app.entity.Venta;
 import cl.sisitemaventas.app.repository.ProductosRepositorio;
+import cl.sisitemaventas.app.repository.ProductosVendidosRepositorio;
+import cl.sisitemaventas.app.repository.VentasRepositorio;
 import jakarta.servlet.http.HttpServletRequest;
 
 
@@ -23,11 +29,11 @@ public class VenderControllers {
 
 	@Autowired
 	private ProductosRepositorio productosRepository;
-//	@Autowired
-//	private VentasRepositorio ventasRepository;
-//	@Autowired
-//	private ProductosVendidosRepositorio productosVendidosRepository;
-//	
+	@Autowired
+	private VentasRepositorio ventasRepository;
+	@Autowired
+	private ProductosVendidosRepositorio productosVendidosRepository;
+	
 //	@Autowired
 //	private ProductoServicio productoServicio;
 	private Integer descuento;
@@ -82,7 +88,8 @@ public class VenderControllers {
 	            }
 	        }
 	        if (!encontrado) {
-	        	carrito.add(new ProductoParaVender(productoBuscadoPorCodigo.getId(), productoBuscadoPorCodigo.getNombre(), productoBuscadoPorCodigo.getCodigo(), productoBuscadoPorCodigo.getPrecioCompra(), productoBuscadoPorCodigo.getPrecioVenta(), productoBuscadoPorCodigo.getStock(),productoBuscadoPorCodigo.getCategoria_id(),  1));
+	        	carrito.add(new ProductoParaVender(productoBuscadoPorCodigo.getId(), productoBuscadoPorCodigo.getNombre(), productoBuscadoPorCodigo.getCodigo(), productoBuscadoPorCodigo.getPrecioCompra(), 
+	        			productoBuscadoPorCodigo.getPrecioVenta(), productoBuscadoPorCodigo.getStock(),1,productoBuscadoPorCodigo.getCategoria_id() ));
 	        	
 	        }
 	        this.guardarCarrito(carrito, request);
@@ -99,6 +106,74 @@ public class VenderControllers {
 
 	    private void guardarCarrito(ArrayList<ProductoParaVender> carrito, HttpServletRequest request) {
 	        request.getSession().setAttribute("carrito", carrito);
+	    }
+	    @PostMapping(value = "/terminar")
+	    public String terminarVenta(HttpServletRequest request, RedirectAttributes redirectAttrs) throws Exception {
+	        ArrayList<ProductoParaVender> carrito = this.obtenerCarrito(request);
+	        // Si no hay carrito o está vacío, regresamos inmediatamente
+	        if (carrito == null || carrito.size() <= 0) {
+	            return "redirect:/vender/";
+	        }
+	        Venta v = ventasRepository.save(new Venta(this.descuento));
+	        // Recorrer el carrito
+	        for (ProductoParaVender productoParaVender : carrito) {
+	            // Obtener el producto fresco desde la base de datos
+	            Producto p = productosRepository.findById(productoParaVender.getId()).orElse(null);
+	            if (p == null) continue; // Si es nulo o no existe, ignoramos el siguiente código con continue
+	            // Le restamos existencia
+	            p.restarStock(productoParaVender.getCantidad());
+	            // Lo guardamos con la existencia ya restada
+	            productosRepository.save(p);
+	            // Creamos un nuevo producto que será el que se guarda junto con la venta
+	            ProductoVendido productoVendido = new ProductoVendido(productoParaVender.getCantidad(), productoParaVender.getPrecioVenta(), productoParaVender.getNombre(), productoParaVender.getCodigo(), v);
+	            // Y lo guardamos
+	            productosVendidosRepository.save(productoVendido);
+	        }
+	    	
+	        // Al final limpiamos el carrito
+	        this.limpiarCarrito(request);
+	        // e indicamos una venta exitosa
+	        redirectAttrs
+	                .addFlashAttribute("mensaje", "Venta realizada correctamente")
+	                .addFlashAttribute("clase", "success");
+	        this.descuento=0;
+	        return "redirect:/vender/";
+	    }
+	    @GetMapping(value = "/limpiar")
+	    public String cancelarVenta(HttpServletRequest request, RedirectAttributes redirectAttrs) {
+	        this.limpiarCarrito(request);
+	        redirectAttrs
+	                .addFlashAttribute("mensaje", "Venta cancelada")
+	                .addFlashAttribute("clase", "info");
+	        this.descuento=0;
+	        return "redirect:/vender/";
+	    }
+	    
+	    @PostMapping(value = "/descuento")   
+	    public String descTotal(@RequestParam("descuento") int descuento,  HttpServletRequest request,Model model) {    
+	    	this.descuento = descuento;    	
+	    	return "redirect:/vender/";    	
+	    }
+	    
+	    @PostMapping(value = "/cantidad/{indice}")   
+	    public String sumarCantidad(@RequestParam("cantidad") int cantidad,  HttpServletRequest request, @PathVariable int indice) {    	
+	    	ArrayList<ProductoParaVender> carrito = this.obtenerCarrito(request);
+	    	carrito.get(indice).setCantidad(cantidad); 	
+	    	this.guardarCarrito(carrito, request);
+	    	return "redirect:/vender/";    	
+	    }
+	    @PostMapping(value = "/quitar/{indice}")
+	    public String quitarDelCarrito(@PathVariable int indice, HttpServletRequest request) {
+	        ArrayList<ProductoParaVender> carrito = this.obtenerCarrito(request);
+	        if (carrito != null && carrito.size() > 0 && carrito.get(indice) != null) {
+	            carrito.remove(indice);
+	            this.guardarCarrito(carrito, request);
+	        }
+	        return "redirect:/vender/";
+	    }
+
+	    private void limpiarCarrito(HttpServletRequest request) {
+	        this.guardarCarrito(new ArrayList<>(), request);
 	    }
 
 }

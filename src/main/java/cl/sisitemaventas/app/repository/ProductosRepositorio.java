@@ -9,14 +9,8 @@ import cl.sisitemaventas.app.entity.Producto;
 
 
 public interface ProductosRepositorio extends JpaRepository<Producto, Integer> {
-
-    Producto findFirstByCodigo(String codigoProducto);
-    
-    @Query( value = "SELECT * FROM producto where nombre LIKE %?1% "
-    		+ " or codigo LIKE %?1% ", 
-    		  nativeQuery = true)
-    public List<Producto> findAll(String palabraClave);
-
+	
+	Producto findFirstByCodigo(String codigoProducto);
     
     @Query( value = "SELECT * FROM producto where stock <= ?1 order by stock desc", 
     		  nativeQuery = true)

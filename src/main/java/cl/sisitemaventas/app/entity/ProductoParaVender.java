@@ -17,7 +17,7 @@ public class ProductoParaVender	 extends Producto {
 	}
 
 	public ProductoParaVender(String nombre, String codigo, Integer precioCompra, Integer precioVenta, Integer stock, Integer cantidad,Integer categoria_id) {
-		super(nombre, codigo, precioCompra, precioVenta, stock,categoria_id);
+		super(nombre, codigo, precioCompra, precioVenta, stock, categoria_id);
 		 this.cantidad = cantidad;
 	}
 

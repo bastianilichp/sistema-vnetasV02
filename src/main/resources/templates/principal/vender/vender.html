@@ -75,8 +75,8 @@
 		                <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
 		                    data-parent="#accordionSidebar">
 		                    <div class="bg-white py-2 collapse-inner rounded">                       
-		                        <a class="collapse-item" href="utilities-color.html">Ver Productos</a>
-		                        <a class="collapse-item" href="utilities-border.html">Agregar Producto</a>
+		                        <a class="collapse-item" th:href="@{/verProductos}">Ver Productos</a>
+		                        <a class="collapse-item" th:href="@{/agregarProductos}">Agregar Producto</a>
 		                        <a class="collapse-item" href="utilities-animation.html">Stock</a>                        
 		                    </div>
 		                </div>
@@ -187,13 +187,13 @@
 				</div>
 			</form>
 			<div class="table-responsive">
-				<table class="table table-striped" style="font-size: 15px;">
-					<thead class="table-dark">
+				<table class="table table-bordered" style="font-size: 15px;">
+					<thead class="table-primary">
 						<tr>
 							<th>Nombre</th>
 							<th>Stock</th>
 							<th>Código</th>
-							<th>Precio</th>
+							<th>Precio</th>							
 							<th>Cantidad</th>
 							<th>Total</th>
 							<th>Quitar de lista</th>
@@ -205,9 +205,10 @@
 							<td th:text="${producto.stock}"></td>
 							<td th:text="${producto.codigo}"></td>
 							<td th:text="${producto.precioVenta}"></td>
+							
 							<td>
 								<form th:action="@{/vender/cantidad/} + ${iterador.index}" method="post">
-									<input style="width: 30%;" type="number" id="cantidad" name="cantidad" autofocus
+									<input style="width: 40%;" type="number" id="cantidad" name="cantidad" autofocus
 										autocomplete="on" maxlength="2" min="1" max="99" th:value="${producto.cantidad}"
 										method="post" />
 								</form>
@@ -279,12 +280,7 @@
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
 
-    <!-- Page level plugins -->
-    <script src="vendor/chart.js/Chart.min.js"></script>
-
-    <!-- Page level custom scripts -->
-    <script src="js/demo/chart-area-demo.js"></script>
-    <script src="js/demo/chart-pie-demo.js"></script>
+   
    
     </body>
         </html>

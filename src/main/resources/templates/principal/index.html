@@ -78,8 +78,8 @@
 		                <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
 		                    data-parent="#accordionSidebar">
 		                    <div class="bg-white py-2 collapse-inner rounded">                       
-		                        <a class="collapse-item" href="utilities-color.html">Ver Productos</a>
-		                        <a class="collapse-item" href="utilities-border.html">Agregar Producto</a>
+		                        <a class="collapse-item" th:href="@{/verProductos}">Ver Productos</a>
+		                        <a class="collapse-item" th:href="@{/agregarProductos}">Agregar Producto</a>
 		                        <a class="collapse-item" href="utilities-animation.html">Stock</a>                        
 		                    </div>
 		                </div>
@@ -120,35 +120,14 @@
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
 
-                        <!-- Nav Item - Search Dropdown (Visible Only XS) -->
-                        <li class="nav-item dropdown no-arrow d-sm-none">
-                            <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-search fa-fw"></i>
-                            </a>
-                            <!-- Dropdown - Messages -->
-                            <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
-                                aria-labelledby="searchDropdown">
-                                <form class="form-inline mr-auto w-100 navbar-search">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control bg-light border-0 small"
-                                            placeholder="Search for..." aria-label="Search"
-                                            aria-describedby="basic-addon2">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-primary" type="button">
-                                                <i class="fas fa-search fa-sm"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </li>
+                        
 
                         <!-- Nav Item - User Information -->
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><output  th:text="${vendedor}" >											  
+											</output ></span>
                                 <img class="img-profile rounded-circle">
                             </a>
                             <!-- Dropdown - User Information -->
@@ -215,10 +194,109 @@
                             </div>
                         </div>
                         
+                               <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                                Venta Mes Anterior</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><output  th:text="${montoMesAnterior}" >											  
+											</output ></div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-warning shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                En Blanco</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><output>											  
+											</output ></div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
 						  
 					  </div>
-					 
-				</div>
+				  <div class="row">
+				
+					 <!-- DataTales Example -->
+                    <div class="card shadow mb-5">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Ultimas Venta</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+										  <tr>
+									     <th>Fecha</th>
+											<th>SubTotal</th>
+											<th>Descuento</th>
+											<th>Total</th>
+											<th>Productos</th>	
+											<th>Acción</th>						      
+									    </tr>
+									    </thead>
+			  							<tbody>
+											<tr th:each="venta : ${ventas}">
+												<td th:text="${venta.fechaYHora}"></td>
+												<td th:text="${venta.total}"></td>
+												<td th:text="${venta.descuento}"></td>
+												<td th:text="${venta.total - venta.descuento}"></td>
+					
+												<td>
+													<table class="table table-bordered">
+														<thead>
+															<tr>
+																<th>Nombre</th>
+																<th>Código de barras</th>
+																<th>Cantidad vendida</th>
+																<th>Precio</th>
+																<th>Total</th>
+															</tr>
+														</thead>
+														<tbody>
+															<tr th:each="producto : ${venta.productos}">
+																<td th:text="${producto.nombre}"></td>
+																<td th:text="${producto.codigo}"></td>
+																<td th:text="${producto.cantidad}"></td>
+																<td th:text="${producto.precio}"></td>
+																<td th:text="${producto.total}"></td>
+															</tr>
+													</tbody>
+												</table>
+											</td>
+											<td>
+												<form>
+													<button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i>
+													</button>
+												</form>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+						  
+								 </div>
+						 	</div>
+						</div>
+					</div>
+					
+			
+				
                 
                 <!--CONTENIDO PAGINA  -->
         	</div>

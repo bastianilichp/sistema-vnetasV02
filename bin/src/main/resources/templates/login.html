@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+
+    <title>Botilleria Donde El Lito</title>
+  </head>
+  <body>
+
+	  
+	 <form th:action="@{/inicioSession}" method="get">
+	
+    <section class="form-02-main" >
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="_lk_de">
+              <div class="form-03-main">
+                <div class="logo">
+                  <img src="images/user.png">
+                </div>
+                <div class="form-group">
+                  <input type="email" name="email" class="form-control _ge_de_ol"  placeholder="Enter Email" required="" aria-required="true">
+                </div>
+
+                <div class="form-group">
+                  <input  name="password" class="form-control _ge_de_ol" type="password" placeholder="Enter Password" required="" aria-required="true">
+                </div>
+ 				<input type="submit" class="form-control btn btn-primary" name="login-submit"
+										id="login-submit" value="Iniciar sesión" />
+                
+              <div class="logo2">
+                  <img src="images/fondoLito.png">
+                </div>
+                
+               
+
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    </form>
+  </body>
+</html>
